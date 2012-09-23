@@ -1,1 +1,1 @@
-./node_modules/vows/bin/vows ./test/tests/* --spec
+./node_modules/vows/bin/vows ./test/tests/* ./test/mongo/* --spec
