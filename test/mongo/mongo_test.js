@@ -40,78 +40,15 @@ suite.addBatch({
     }
 });
 
-suite.addBatch({
-    'When selecting from the mongo data source': {
-        topic: function(){
-            asyncblock(function(){
-                var client = new mongodb.Db(TEST_DB_NAME, new mongodb.Server('127.0.0.1', 27017));
-                client.open().sync();
-                var mongo = new slinqy.DataSource.Mongo(client);
+    var tests = require('../datasource/datasource_tests.js');
+    suite.addBatch(tests.getTests(function(callback){
+        asyncblock(function(){
+            var client = new mongodb.Db(TEST_DB_NAME, new mongodb.Server('127.0.0.1', 27017));
+            client.open().sync();
 
-                var results = slinqy
-                    .from(mongo, 'test')
-                    .skip(10)
-                    .take(10)
-                    .select('$.number')
-                    .toArray().sync();
-
-                return results;
-            }, this.callback);
-        },
-
-        'I get the expected results': function(results){
-            assert.deepEqual(results, [11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
-        }
-    },
-
-    'When selecting from the mongo data source with a where clause': {
-        topic: function(){
-            asyncblock(function(){
-                var client = new mongodb.Db(TEST_DB_NAME, new mongodb.Server('127.0.0.1', 27017));
-                client.open().sync();
-                var mongo = new slinqy.DataSource.Mongo(client);
-
-                var results = slinqy
-                    .from(mongo, 'test')
-                    .skip(10)
-                    .take(10)
-                    .select('$.number')
-                    .where('$ % 2 === 0')
-                    .toArray().sync();
-
-                return results;
-            }, this.callback);
-        },
-
-        'I get the expected results': function(results){
-            assert.deepEqual(results, [12, 14, 16, 18, 20]);
-        }
-    },
-
-    'When selecting from the mongo data source with a where clause': {
-        topic: function(){
-            asyncblock(function(){
-                var client = new mongodb.Db(TEST_DB_NAME, new mongodb.Server('127.0.0.1', 27017));
-                client.open().sync();
-                var mongo = new slinqy.DataSource.Mongo(client);
-
-                var results = slinqy
-                    .from(mongo, 'test')
-                    .where('$.number % 2 === 0')
-                    .skip(10)
-                    .take(10)
-                    .select('$.number')
-                    .toArray().sync();
-
-                return results;
-            }, this.callback);
-        },
-
-        'I get the expected results': function(results){
-            assert.deepEqual(results, [22, 24, 26, 28, 30, 32, 34, 36, 38, 40]);
-        }
-    }
-});
+            return new slinqy.DataSource.Mongo(client);
+        }, callback);
+    }));
 
 suite.addBatch({
     'When dropping the database': {
