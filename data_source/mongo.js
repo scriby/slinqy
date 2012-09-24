@@ -1,6 +1,4 @@
 (function(){
-    var mongodb = require('mongodb');
-
     var MongoIterator = function(client, collection){
         this.client = client;
         this.collection = collection;
@@ -13,37 +11,23 @@
             self.cursor.nextObject(callback);
         };
 
-        if(!this.client.openCalled){
-            this.client.open(function(err){
+        if(!this.cursor){
+            self.client.collection(self.collection, function(err, collection){
                 if(err){
                     return callback(err);
                 }
 
-                self.client.collection(self.collection, function(err, collection){
-                    if(err){
-                        return callback(err);
-                    }
+                self.cursor = collection.find({});
 
-                    self.cursor = collection.find({});
-
-                    getNext();
-                });
+                getNext();
             });
         } else {
             getNext();
         }
     };
 
-    var MongoDataSource = function(dbName, mongoServer, port, options){
-        var server;
-
-        if(typeof mongoServer === 'string'){
-            server = new mongodb.Server(mongoServer, port || 27017, options);
-        } else {
-            server = mongoServer;
-        }
-
-        this.client = new mongodb.Db(dbName, server);
+    var MongoDataSource = function(client){
+        this.client = client;
     };
 
     MongoDataSource.prototype.getIterator = function(args){
