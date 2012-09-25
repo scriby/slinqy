@@ -97,10 +97,13 @@ exports.getTests = function(getDataSource){
                 asyncblock(function(){
                     var results = slinqy
                         .from(getDataSource().sync(), 'test')
-                        .where('$.number < 10')
+                        .select('$.number')
+                        .where('$ < 11')
+                        .take(10)
                         .union(
                             slinqy.from(getDataSource().sync(), 'test')
-                                .where('$.number > 10')
+                                .select('$.number')
+                                .where('$ > 10')
                                 .take(10)
                         )
                         .toArray().sync();
@@ -110,7 +113,7 @@ exports.getTests = function(getDataSource){
             },
 
             'Results': function(results){
-                console.log(results);
+                assert.deepEqual(results, [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ])
             }
         }
     };

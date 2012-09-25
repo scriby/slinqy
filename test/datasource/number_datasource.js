@@ -1,7 +1,7 @@
 var slinqy = require('slinqy');
 
 (function(){
-    var NumberIterator = function(args){
+    var NumberIterator = function(){
         this.current = 0;
     };
     NumberIterator.prototype = new slinqy.Iterator();
@@ -21,7 +21,7 @@ var slinqy = require('slinqy');
     TestDataSource.prototype = new slinqy.DataSource();
     TestDataSource.prototype.constructor = TestDataSource;
 
-    TestDataSource.prototype.getIterator = function(args){
+    TestDataSource.prototype.getIterator = function(){
         return new NumberIterator();
     };
 

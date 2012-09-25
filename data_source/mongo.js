@@ -8,7 +8,18 @@
         var self = this;
 
         var getNext = function(){
-            self.cursor.nextObject(callback);
+            self.cursor.nextObject(function(err, item){
+                if(err){
+                    return callback(err);
+                }
+
+                if(item === null){
+                    //Convert nulls to undefined
+                    return callback();
+                } else {
+                    return callback(null, item);
+                }
+            });
         };
 
         if(!this.cursor){
