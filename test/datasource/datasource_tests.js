@@ -90,6 +90,28 @@ exports.getTests = function(getDataSource){
             'I get the expected results': function(results){
                 assert.deepEqual(results, [22, 24, 26, 28, 30, 32, 34, 36, 38, 40]);
             }
+        },
+
+        'Union (1)': {
+            topic: function(){
+                asyncblock(function(){
+                    var results = slinqy
+                        .from(getDataSource().sync(), 'test')
+                        .where('$.number < 10')
+                        .union(
+                            slinqy.from(getDataSource().sync(), 'test')
+                                .where('$.number > 10')
+                                .take(10)
+                        )
+                        .toArray().sync();
+
+                    return results;
+                }, this.callback);
+            },
+
+            'Results': function(results){
+                console.log(results);
+            }
         }
     };
 };
