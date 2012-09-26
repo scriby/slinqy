@@ -103,7 +103,7 @@ exports.getTests = function(getDataSource){
                         .union(
                             slinqy.from(getDataSource().sync(), 'test')
                                 .select('$.number')
-                                .where('$ > 10')
+                                .where('$ > 5')
                                 .take(10)
                         )
                         .toArray().sync();
@@ -113,7 +113,32 @@ exports.getTests = function(getDataSource){
             },
 
             'Results': function(results){
-                assert.deepEqual(results, [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 ])
+                assert.deepEqual(results, [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ])
+            }
+        },
+
+        'Union all (1)': {
+            topic: function(){
+                asyncblock(function(){
+                    var results = slinqy
+                        .from(getDataSource().sync(), 'test')
+                        .select('$.number')
+                        .where('$ < 11')
+                        .take(10)
+                        .unionAll(
+                            slinqy.from(getDataSource().sync(), 'test')
+                                .select('$.number')
+                                .where('$ > 5')
+                                .take(10)
+                        )
+                        .toArray().sync();
+
+                    return results;
+                }, this.callback);
+            },
+
+            'Results': function(results){
+                assert.deepEqual(results, [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ])
             }
         }
     };
