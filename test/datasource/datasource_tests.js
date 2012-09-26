@@ -140,6 +140,32 @@ exports.getTests = function(getDataSource){
             'Results': function(results){
                 assert.deepEqual(results, [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ])
             }
+        },
+
+        'Join (1)': {
+            topic: function(){
+                asyncblock(function(){
+                    var results = slinqy
+                        .from(getDataSource().sync(), 'test')
+                        .where('$.number < 11')
+                        .take(10)
+                        .join(
+                            slinqy.from(getDataSource().sync(), 'test')
+                                .where('$.number > 5')
+                                .take(10),
+                            '$.number',
+                            '$.number',
+                            'n1,n2=> { n1: n1, n2: n2 }'
+                        )
+                        .toArray().sync();
+
+                    return results;
+                }, this.callback);
+            },
+
+            'Results': function(results){
+                assert.equal(results, [ 6, 7, 8, 9, 10 ]);
+            }
         }
     };
 };
