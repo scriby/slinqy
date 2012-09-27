@@ -167,6 +167,35 @@ exports.getTests = function(getDataSource){
             'Results': function(results){
                 assert.deepEqual(results, [ 6, 7, 8, 9, 10 ]);
             }
+        },
+
+        'Join (2)': {
+            topic: function(){
+                asyncblock(function(){
+                    var results = slinqy
+                        .from(getDataSource().sync(), 'test')
+                        .where('$.number < 11')
+                        .take(10)
+                        .unionAll(
+                            slinqy.from(getDataSource().sync(), 'test').take(10)
+                        )
+                        .join(
+                            slinqy.from(getDataSource().sync(), 'test').where('$.number > 5').take(10),
+                            '$.number',
+                            '$.number',
+                            'n1, n2 => { n1: n1, n2: n2 }'
+                        )
+                        .select('$.n1.number')
+                        .toArray().sync();
+
+                    return results;
+                }, this.callback);
+            },
+
+            'Results': function(results){
+                console.log(results);
+                assert.deepEqual(results, [ 6, 6, 7, 7, 8, 8, 9, 9, 10, 10 ]);
+            }
         }
     };
 };
