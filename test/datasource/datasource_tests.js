@@ -155,8 +155,9 @@ exports.getTests = function(getDataSource){
                                 .take(10),
                             '$.number',
                             '$.number',
-                            'n1,n2=> { n1: n1, n2: n2 }'
+                            'n1, n2 => { n1: n1, n2: n2 }'
                         )
+                        .select('$.n1.number')
                         .toArray().sync();
 
                     return results;
@@ -164,7 +165,7 @@ exports.getTests = function(getDataSource){
             },
 
             'Results': function(results){
-                assert.equal(results, [ 6, 7, 8, 9, 10 ]);
+                assert.deepEqual(results, [ 6, 7, 8, 9, 10 ]);
             }
         }
     };
