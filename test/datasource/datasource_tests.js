@@ -193,8 +193,29 @@ exports.getTests = function(getDataSource){
             },
 
             'Results': function(results){
-                console.log(results);
                 assert.deepEqual(results, [ 6, 6, 7, 7, 8, 8, 9, 9, 10, 10 ]);
+            }
+        },
+
+        'Distinct (1)': {
+            topic: function(){
+                asyncblock(function(){
+                    var results = slinqy
+                        .from(getDataSource().sync(), 'test')
+                        .take(10)
+                        .unionAll(
+                            slinqy.from(getDataSource().sync(), 'test').take(11)
+                        )
+                        .select('$.number')
+                        .distinct()
+                        .toArray().sync();
+
+                    return results;
+                }, this.callback);
+            },
+
+            'Results': function(results){
+                assert.deepEqual(results, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ]);
             }
         }
     };
